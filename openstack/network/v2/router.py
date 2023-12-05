@@ -74,6 +74,8 @@ class Router(resource.Resource, resource.TagMixin):
     status = resource.Body('status')
     #: Timestamp when the router was created.
     updated_at = resource.Body('updated_at')
+    #: The configurations of router
+    configurations = resource.Body('configurations', type=dict)
 
     def _put(self, session, url, body):
         resp = session.put(url, json=body)

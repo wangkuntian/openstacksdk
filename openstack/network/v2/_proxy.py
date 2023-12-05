@@ -35,6 +35,7 @@ from openstack.network.v2 import pool as _pool
 from openstack.network.v2 import pool_member as _pool_member
 from openstack.network.v2 import port as _port
 from openstack.network.v2 import port_forwarding as _port_forwarding
+from openstack.network.v2 import rg_port_forwarding as _rg_port_forwarding
 from openstack.network.v2 import qos_bandwidth_limit_rule as \
     _qos_bandwidth_limit_rule
 from openstack.network.v2 import qos_dscp_marking_rule as \
@@ -3897,3 +3898,110 @@ class Proxy(proxy.Proxy):
         floatingip = self._get_resource(_floating_ip.FloatingIP, floating_ip)
         return self._update(_port_forwarding.PortForwarding, port_forwarding,
                             floatingip_id=floatingip.id, **attrs)
+
+        def router_gateway_port_forwardings(self, router, **query):
+            """Return a generator of floating ip port forwarding
+
+            :param router: The value can be the ID of the Router
+                           that the port forwarding belongs or
+                           a :class:`~openstack.network.v2.router.Router` instance.
+            :param kwargs \*\*query: Optional query parameters to be sent to limit
+                                     the resources being returned.
+            :returns: A generator of router gateway port forwarding objects
+            :rtype: :class:`~openstack.network.v2.
+                            rg_port_forwarding.RGPortForwarding`
+            """
+            router = self._get_resource(_router.Router, router)
+            return self._list(_rg_port_forwarding.RGPortForwarding,
+                              router_id=router.id,
+                              **query)
+
+        def find_router_gateway_port_forwarding(self, router,
+                                                port_forwarding_id,
+                                                ignore_missing=True, **args):
+            """Find a router gateway port forwarding
+
+            :param router: The value can be the ID of the Router
+                           that the port forwarding belongs or
+                           a :class:`~openstack.network.v2.router.Router` instance.
+            :param port_forwarding_id: The ID of a port forwarding.
+            :param bool ignore_missing: When set to ``False``
+                        :class:`~openstack.exceptions.ResourceNotFound` will be
+                        raised when the resource does not exist.
+                        When set to ``True``, None will be returned when
+                        attempting to find a nonexistent resource.
+            :param dict args: Any additional parameters to be passed into
+                        underlying methods. such as query filters.
+            :returns: One :class:`~openstack.network.v2.
+                                  rg_port_forwarding.RGPortForwarding` or None
+            """
+            router = self._get_resource(_router.Router, router)
+            return self._find(_rg_port_forwarding.RGPortForwarding,
+                              port_forwarding_id,
+                              ignore_missing=ignore_missing,
+                              router_id=router.id,
+                              **args)
+
+        def create_router_gateway_port_forwarding(self, router, **attrs):
+            """Create a new router gateway port forwarding from attributes
+
+            :param router: The value can be the ID of the Router
+                           that the port forwarding belongs or
+                           a :class:`~openstack.network.v2.router.Router` instance.
+            :param dict attrs:Keyword arguments which will be used to create
+                a:class:`~openstack.network.v2.
+                         rg_port_forwarding.RGPortForwarding`,
+                comprised of the properties on the PortForwarding class.
+
+            :returns: The results of port forwarding creation
+            :rtype: :class:`~openstack.network.v2.
+                            rg_port_forwarding.RGPortForwarding`
+            """
+            router = self._get_resource(_router.Router, router)
+            return self._create(_rg_port_forwarding.RGPortForwarding,
+                                router_id=router.id, **attrs)
+
+        def delete_router_gateway_port_forwarding(self, router, port_forwarding,
+                                                  ignore_missing=True):
+            """Delete a router gateway port forwarding.
+
+            :param router: The value can be the ID of the Router
+                           that the port forwarding belongs or
+                           a :class:`~openstack.network.v2.router.Router` instance.
+            :param port_forwarding: The value can be either the ID of a port
+                        forwarding or a :class:`~openstack.network.v2.
+                        rg_port_forwarding.RGPortForwarding`instance.
+            :param bool ignore_missing: When set to ``False``
+                        :class:`~openstack.exceptions.ResourceNotFound` will be
+                        raised when the floating ip does not exist.
+                        When set to ``True``, no exception will be set when
+                        attempting to delete a nonexistent ip.
+
+            :returns: ``None``
+            """
+            router = self._get_resource(_router.Router, router)
+            self._delete(_rg_port_forwarding.RGPortForwarding, port_forwarding,
+                         ignore_missing=ignore_missing,
+                         router_id=router.id)
+
+        def update_router_gateway_port_forwarding(self, router, port_forwarding,
+                                                  **attrs):
+            """Update a router gateway port forwarding
+
+            :param router: The value can be the ID of the Router
+                           that the port forwarding belongs or
+                           a :class:`~openstack.network.v2.router.Router` instance.
+            :param port_forwarding: Either the id of a floating ip port forwarding
+                                or a :class:`~openstack.network.v2.
+                                rg_port_forwarding.RGPortForwarding`instance.
+            :attrs kwargs: The attributes to update on the floating ip port
+                           forwarding represented by ``value``.
+
+            :returns: The updated floating ip port forwarding
+            :rtype: :class:`~openstack.network.v2.
+                            rg_port_forwarding.RGPortForwarding`
+            """
+            router = self._get_resource(_router.Router, router)
+            return self._update(_rg_port_forwarding.RGPortForwarding,
+                                port_forwarding,
+                                router_id=router.id, **attrs)
